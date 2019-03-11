@@ -1,0 +1,10 @@
+$gold: gold;
+
+.componentButton {
+  border: 10px solid yellowgreen;
+  color: $gold;
+
+  span {
+    background: dodgerblue;
+  }
+}

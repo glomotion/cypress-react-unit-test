@@ -1,3 +1,4 @@
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('@cypress/webpack-preprocessor')
 const webpackOptions = {
   module: {
@@ -10,10 +11,41 @@ const webpackOptions = {
           plugins: ['@babel/plugin-proposal-class-properties']
         }
       },
+      // {
+      //   test: /\.css$/,
+      //   exclude: [/node_modules/],
+      //   use: ['style-loader', 'css-loader']
+      // },
       {
-        test: /\.css$/,
+        test: /\.mscss$/,
         exclude: [/node_modules/],
-        use: ['style-loader', 'css-loader']
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              context: '/',
+              modules: true,
+              localIdentName: '[local]__[path][name]__[hash:base64:5]',
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              sourceMap: true,
+              plugins: [],
+            },
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              outputStyle: 'expanded',
+              sourceMap: true,
+            },
+          },
+        ]
       }
     ]
   }

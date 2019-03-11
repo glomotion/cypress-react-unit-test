@@ -7,7 +7,7 @@ const config = {
   entry: APP_DIR + '/index.jsx',
   output: {
     path: BUILD_DIR,
-    filename: 'bundle.js'
+    filename: 'index.js'
   },
   module: {
     loaders: [
