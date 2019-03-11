@@ -1,6 +1,8 @@
 import React from 'react';
-import { HelloWorld } from './hello-world.jsx';
+import { NestedChild } from './NestedChild.jsx';
 // import { logger } from './tools.js';
+
+import styles from './Button.mscss';
 
 export default class Button extends React.Component {
   constructor (...args) {
@@ -13,10 +15,10 @@ export default class Button extends React.Component {
 
   render () {
     return (
-      <div>
-        <HelloWorld />
+      <div className={styles.componentButton}>
         <p>{this.state.greeting} World</p>
         <button onClick={() => this.updateGreeting()}>Update greeting</button>
+        <NestedChild />
       </div>
     )
   }

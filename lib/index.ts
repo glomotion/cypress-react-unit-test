@@ -41,6 +41,7 @@ Cypress.Commands.add('injectReactDOM', () => {
   })
 })
 
+
 Cypress.stylesCache = stylesCache
 
 /** Caches styles from previously compiled components for reuse
@@ -137,6 +138,71 @@ export const mount = (jsx, alias) => {
 
 Cypress.Commands.add('mount', mount)
 
+
+/**
+ * Mount a React component in a blank document; register it as an alias
+ * To access: use an alias or original component reference
+ *  @function   cy.shallowMount
+ *  @param      {Object}  jsx - component to mount
+ *  @param      {string}  [Component] - alias to use later
+ *  @example
+ ```
+ import Hello from './hello.jsx'
+ // mount and access by alias
+ cy.shallowMount(<Hello />, 'Hello')
+ // using default alias
+ cy.get('@Component')
+ // using specified alias
+ cy.get('@Hello').its('state').should(...)
+ // using original component
+ cy.get(Hello)
+ ```
+ **/
+export const shallowMount = (jsx, alias) => {
+  // Get the display name property via the component constructor
+  const displayname = alias || jsx.type.prototype.constructor.name
+
+  let cmd
+
+  cy.injectReactDOM()
+    .window({ log: false })
+    .then(() => {
+      cmd = Cypress.log({
+        name: 'shallowMount',
+        // @ts-ignore
+        message: [`ReactShallowRenderer.render(<${displayname} ... />)`],
+        consoleProps () {
+          return {
+            props: jsx.props
+          }
+        }
+      })
+    })
+    .then(setXMLHttpRequest)
+    .then(setAlert)
+    .then(win => {
+      cy.log('!!!!!!!!!!!', JSON.stringify(jsx));
+      const { ReactDOM, ReactShallowRenderer } = win
+      const document = cy.state('document')
+      const shallowRenderer = new ReactShallowRenderer();
+      shallowRenderer.render(jsx);
+      const component = ReactDOM.render(
+        shallowRenderer.getRenderOutput(),
+        document.getElementById('cypress-jsdom')
+      )
+      cy.wrap(component, { log: false }).as(displayname)
+    })
+  cy.copyComponentStyles(jsx)
+    .then(() => {
+      cmd.snapshot().end()
+    })
+}
+
+Cypress.Commands.add('shallowMount', shallowMount)
+
+
+
+
 /** Get one or more DOM elements by selector or alias.
     Features extended support for JSX and React.Component
     @function   cy.get
@@ -176,6 +242,11 @@ const moduleNames = [
     name: 'react-dom',
     type: 'file',
     location: 'node_modules/react-dom/umd/react-dom.development.js'
+  },
+  {
+    name: 'shallow-renderer',
+    type: 'file',
+    location: 'node_modules/react-test-renderer/umd/react-test-renderer-shallow.production.min.js'
   }
 ]
 
