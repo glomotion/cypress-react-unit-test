@@ -1,7 +1,5 @@
-import React from 'react'
+import React from 'react';
 
-export class HelloWorld extends React.Component {
-  render () {
-    return <p>Hello World!</p>
-  }
-}
+export const HelloWorld = () => <p style={{ background: 'gold' }}>Hello World!</p>;
+
+export default { HelloWorld };

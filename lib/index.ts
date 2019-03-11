@@ -190,7 +190,7 @@ before(() => {
   Cypress.modules = []
   cy.log('Initializing UMD module cache').then(() => {
     for (const module of moduleNames) {
-      let { name, type, location } = module
+      let { name, type, location } = module;
       cy.readFile(location, {log:false})
         .then(source => Cypress.modules.push({ name, type, location, source }))
     }
